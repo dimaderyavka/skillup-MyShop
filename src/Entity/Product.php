@@ -23,7 +23,7 @@ class Product
     private $title;
 
     /**
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
+     * @ORM\Column(type="decimal", precision=10,scale=2, nullable=true)
      */
     private $price;
 
@@ -32,7 +32,15 @@ class Product
      */
     private $description;
 
-    public function getId()
+    /**
+     * @var Category
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="products")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $category;
+
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -61,23 +69,28 @@ class Product
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param mixed $description
-     * @return Product
-     */
-    public function setDescription($description): self
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
+
         return $this;
     }
 
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): self
+    {
+        $this->category = $category;
+
+        return $this;
+    }
 
 }
