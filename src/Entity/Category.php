@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="App\Repository\CategoryRepository")
  */
 class Category
 {
@@ -31,7 +31,7 @@ class Category
     private $products;
 
     /**
-     * @var Product
+     * @var Product[]
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="subcategories")
      * @ORM\JoinColumn(name="parent_id", nullable=true)
@@ -39,11 +39,12 @@ class Category
     private $parent;
 
     /**
-     * @var Product[]
+     * @var Category[]
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Category", mappedBy="parent")
      */
     private $subcategories;
+
 
     public function __construct()
     {
@@ -51,7 +52,7 @@ class Category
         $this->subcategories = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId()
     {
         return $this->id;
     }

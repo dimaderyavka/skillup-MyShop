@@ -39,8 +39,18 @@ class Product
      * @ORM\JoinColumn(nullable=true)
      */
     private $category;
+    private $__EXTRA__LINE;
 
-    public function getId(): ?int
+    /**
+     * @ORM\Column(type="boolean", nullable=true, options={"default": false})
+     */
+    private $isTop;
+
+
+
+
+
+    public function getId()
     {
         return $this->id;
     }
@@ -69,15 +79,21 @@ class Product
         return $this;
     }
 
-    public function getDescription(): ?string
+    /**
+     * @return mixed
+     */
+    public function getDescription()
     {
         return $this->description;
     }
 
-    public function setDescription(?string $description): self
+    /**
+     * @param mixed $description
+     * @return Product
+     */
+    public function setDescription($description):self
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -89,6 +105,18 @@ class Product
     public function setCategory(?Category $category): self
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function getIsTop(): ?bool
+    {
+        return $this->isTop;
+    }
+
+    public function setIsTop(?bool $isTop): self
+    {
+        $this->isTop = $isTop;
 
         return $this;
     }
