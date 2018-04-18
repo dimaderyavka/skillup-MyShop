@@ -48,6 +48,7 @@ class Category
 
     public function __construct()
     {
+        $this->name = '';
         $this->products = new ArrayCollection();
         $this->subcategories = new ArrayCollection();
     }
@@ -141,5 +142,10 @@ class Category
         }
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->name;
     }
 }
