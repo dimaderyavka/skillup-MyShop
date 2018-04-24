@@ -10,13 +10,20 @@ namespace App\Admin;
 
 
 
+use App\Entity\Category;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Doctrine\ORM\EntityManagerInterface;
 
 class CategoryAdmin extends AbstractAdmin
 {
+    protected $datagridValues = [
+        '_sort_order' => 'ASC',
+        '_sort_by' => 'left'
+    ];
+
     protected function configureFormFields(FormMapper $form)
     {
         $form
@@ -28,9 +35,12 @@ class CategoryAdmin extends AbstractAdmin
     protected function configureListFields(ListMapper $list)
     {
         $list
-            ->addIdentifier('id')
-            ->addIdentifier('name')
-            ->add('parent')
+            ->addIdentifier('id', null, ['sortable' => false])
+            ->addIdentifier('name', null, [
+                'sortable' => false,
+                'template' => 'admin/category/fields/name.html.twig',
+            ])
+            ->add('parent', null, ['sortable' => false])
             ;
     }
 
@@ -41,6 +51,26 @@ class CategoryAdmin extends AbstractAdmin
             ->add('name')
             ->add('parent')
             ;
+    }
+
+    public function postPersist($object)
+    {
+        /** @var EntityManagerInterface $em */
+        $em = $this->modelManager->getEntityManager($object);
+        $repo = $em->getRepository(Category::class);
+        $repo->verify();
+        $repo->recover();
+        $em->flush();
+    }
+
+    public function postUpdate($object)
+    {
+        /** @var EntityManagerInterface $em */
+        $em = $this->modelManager->getEntityManager($object);
+        $repo = $em->getRepository(Category::class);
+        $repo->verify();
+        $repo->recover();
+        $em->flush();
     }
 
 

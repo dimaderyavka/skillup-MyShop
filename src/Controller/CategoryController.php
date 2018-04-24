@@ -11,15 +11,18 @@ class CategoryController extends Controller
     /**
      * @Route("/category", name="category")
      */
-    public function show($id)
+    public function show()
     {
         $repo = $this->getDoctrine()->getRepository(Category::class);
         //$categories = $repo->findBy(['parent' => null]);
+        $roots = $repo->getRootNodes();
+        $root = reset($roots);
 
         $qb = $repo->CreateQueryBuilder('cat');
         $qb
             ->select('cat')
-            ->where('cat.parent IS NULL');
+            ->where('cat.parent = :parent')
+            ->setParameter('parent', $root);
 
         $categories = $qb->getQuery()->execute();
 
@@ -28,13 +31,46 @@ class CategoryController extends Controller
         ]);
     }
 
+class CategoryController extends Controller
+{
+    /**
+     * @Route("/category", name="category")
+     */
+    public function index()
+    {
+        $repo = $this->getDoctrine()->getRepository(Category::class);
+        //$categories = $repo->findBy(['parent' => null]);
+        $qb = $repo->createQueryBuilder('cat');
+        $qb
+            ->select('cat')
+            ->where('cat.parent IS NULL')
+        ;
+        $categories = $qb->getQuery()->execute();
+        return $this->render('category/index.html.twig', [
+            'categories' => $categories
+        ]);
+    }
     /**
      * @Route("/category/{id}", name="category_show")
      */
-    public function showAction(Category $category)
+    public function show($id)
     {
-
-
-        return $this->render($id);
+        $repo = $this->getDoctrine()->getRepository(Category::class);
+        $qb = $repo->createQueryBuilder('cat');
+        $qb
+            ->leftJoin('cat.subcategories', 'subcat')
+            ->leftJoin('cat.products', 'p')
+            ->select('cat, subcat, p')
+            ->where('cat.id = :id')
+            ->setParameter('id', $id)
+        ;
+        $category = $qb->getQuery()->getOneOrNullResult();
+        if (!$category) {
+            throw $this->createNotFoundException('Category with id #' . $id . ' not found.');
+        }
+        return $this->render('category/show.html.twig', [
+            'category' => $category,
+        ]);
     }
+
 }

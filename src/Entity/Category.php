@@ -5,12 +5,17 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Tree\Traits\NestedSetEntity;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\CategoryRepository")
+ * @ORM\Entity(repositoryClass="Gedmo\Tree\Entity\Repository\NestedTreeRepository")
+ * @Gedmo\Tree(type="nested")
  */
 class Category
 {
+    use NestedSetEntity;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -32,7 +37,7 @@ class Category
 
     /**
      * @var Product[]
-     *
+     * @Gedmo\TreeParent
      * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="subcategories")
      * @ORM\JoinColumn(name="parent_id", nullable=true)
      */
@@ -42,6 +47,7 @@ class Category
      * @var Category[]
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Category", mappedBy="parent")
+     * @ORM\OrderBy({"left" = "ASC"})
      */
     private $subcategories;
 
@@ -147,5 +153,11 @@ class Category
     public function __toString()
     {
         return $this->name;
+    }
+
+
+    public function getLevel(): ?int
+    {
+        return $this->level;
     }
 }
